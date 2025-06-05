@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, root_validator
 from typing import Optional
+from data_queue import ArticleQueue, SeenURLs
 
 app = FastAPI()
-
+article = ArticleQueue(app)
+urls = SeenURLs(app)
 class ProcessRequest(BaseModel):
     text: Optional[str] = None
     url: Optional[str] = None
