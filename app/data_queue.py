@@ -22,3 +22,28 @@ class SeenURLs:
 
     def add_url(self,url):
         self.seen.add(url)
+
+
+class HistoryStack:
+    def __init__(self):
+        self.stack = list()
+
+    def push(self, data):
+        self.stack.append(data)
+
+    def pop(self):
+        if self.is_empty():
+            return None
+        
+        return self.stack.pop()
+    
+    def peek(self):
+        if self.is_empty():
+            return None
+        return self.stack[-1]
+
+    def is_empty(self):
+        return len(self.stack) ==0
+    
+    def clear(self):
+        self.stack.clear()
