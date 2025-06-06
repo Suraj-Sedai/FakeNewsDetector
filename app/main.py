@@ -3,6 +3,7 @@ from pydantic import BaseModel, root_validator
 from typing import Optional
 from data_queue import ArticleQueue, SeenURLs
 from lru_cache import LRUCache
+from summarizer import summarize
 
 app = FastAPI()
 
@@ -42,7 +43,7 @@ async def process_data(request: ProcessRequest):
     # ✅ Dummy processing result
     result = {
         "source": "url" if request.url else "text",
-        "summary": "This is a dummy summary.",
+        "summary": summarize(request.text or request.url),
         "confidence": 0.95,
         "label": "real"
     }
