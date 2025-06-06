@@ -7,8 +7,8 @@ from lru_cache import LRUCache
 app = FastAPI()
 
 # Global instances
-article = ArticleQueue(app)
-urls = SeenURLs(app)
+article = ArticleQueue()
+urls = SeenURLs()
 cache = LRUCache(capacity=100)  # global LRU cache
 
 # Request model
@@ -34,7 +34,7 @@ async def process_data(request: ProcessRequest):
 
     # ✅ Check for seen URL
     if request.url:
-        if request.url in urls.seen_urls:
+        if urls.has_seen(request.url):
             raise HTTPException(status_code=400, detail="This URL has already been processed.")
         urls.add_url(request.url)
         article.enqueue(request.url)
