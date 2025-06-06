@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, root_validator
 from typing import Optional
-from .data_queue import ArticleQueue, SeenURLs
+from .data_queue import ArticleQueue, SeenURLs, HistoryStack
 from .lru_cache import LRUCache
 from .summarizer import summarize
 from .article_scraper import extract_text_from_url
@@ -13,6 +13,7 @@ app = FastAPI()
 article = ArticleQueue()
 urls = SeenURLs()
 cache = LRUCache(capacity=100)  # global LRU cache
+history = HistoryStack()
 
 # Request model
 class ProcessRequest(BaseModel):
@@ -25,6 +26,15 @@ class ProcessRequest(BaseModel):
             raise ValueError("At least one of 'text' or 'url' must be provided.")
         return values
 
+#Create an /undo Endpoint
+@app.post("/undo")
+def undo_last():
+    if history.is_empty():
+        raise HTTPException(status_code=400, detail="No article to undo.")
+    
+    undone = history.pop()
+    return {"status": "undone", "undone_article": undone}
+    
 # /process endpoint
 @app.post("/process")
 async def process_data(request: ProcessRequest):
@@ -58,6 +68,8 @@ async def process_data(request: ProcessRequest):
         "summary": summarize(extracted_text),
         **classify(extracted_text)
     }
+
+    history.push(result)
 
     # ✅ Store result in LRU cache
     cache.put(key, result)
