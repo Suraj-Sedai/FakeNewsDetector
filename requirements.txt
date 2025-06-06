@@ -1,1 +1,1 @@
-pip install fastapi uvicorn transformers torch
+pip install fastapi uvicorn transformers torch newspaper3k

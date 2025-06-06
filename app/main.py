@@ -4,6 +4,7 @@ from typing import Optional
 from data_queue import ArticleQueue, SeenURLs
 from lru_cache import LRUCache
 from summarizer import summarize
+from article_scraper import extract_text_from_url
 
 app = FastAPI()
 
@@ -40,10 +41,20 @@ async def process_data(request: ProcessRequest):
         urls.add_url(request.url)
         article.enqueue(request.url)
 
+    # If URL was given but no text, extract article text
+    if request.url and not request.text:
+        try:
+            extracted_text = extract_text_from_url(request.url)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Failed to extract article from URL.")
+    else:
+        extracted_text = request.text
+
+
     # ✅ Dummy processing result
     result = {
         "source": "url" if request.url else "text",
-        "summary": summarize(request.text or request.url),
+        "summary": summarize(extracted_text),
         "confidence": 0.95,
         "label": "real"
     }
