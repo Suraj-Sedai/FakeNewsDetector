@@ -20,5 +20,5 @@ class SeenURLs:
     def has_seen(self, url):
         return url in self.seen
 
-    def add(self,url):
+    def add_url(self,url):
         self.seen.add(url)
