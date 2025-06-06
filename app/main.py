@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, root_validator
 from typing import Optional
-from data_queue import ArticleQueue, SeenURLs
-from lru_cache import LRUCache
-from summarizer import summarize
-from article_scraper import extract_text_from_url
+from .data_queue import ArticleQueue, SeenURLs
+from .lru_cache import LRUCache
+from .summarizer import summarize
+from .article_scraper import extract_text_from_url
 
 app = FastAPI()
 
