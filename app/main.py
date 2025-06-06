@@ -9,6 +9,15 @@ urls = SeenURLs(app)
 class ProcessRequest(BaseModel):
     text: Optional[str] = None
     url: Optional[str] = None
+    # If a URL is given, check if it's already in seen_urls
+    # If yes → return response like "Already processed"
+    if url in urls.seen_urls:
+        raise ValueError("This URL has already been processed.")
+    
+    # If not → add to seen_urls, and enqueue the article
+    else:
+        urls.add_url(url)
+        article.enqueue(url)
 
     @root_validator(pre=True)
     def at_least_one_field_required(cls, values):
