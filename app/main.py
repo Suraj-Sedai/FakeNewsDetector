@@ -5,6 +5,7 @@ from .data_queue import ArticleQueue, SeenURLs
 from .lru_cache import LRUCache
 from .summarizer import summarize
 from .article_scraper import extract_text_from_url
+from .classifier import classify
 
 app = FastAPI()
 
@@ -55,8 +56,7 @@ async def process_data(request: ProcessRequest):
     result = {
         "source": "url" if request.url else "text",
         "summary": summarize(extracted_text),
-        "confidence": 0.95,
-        "label": "real"
+        **classify(extracted_text)
     }
 
     # ✅ Store result in LRU cache
